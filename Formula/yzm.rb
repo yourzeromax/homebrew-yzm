@@ -5,8 +5,6 @@ class Yzm < Formula
   desc ""
   homepage ""
   url "https://github.com/yourzeromax/homebrew-yzm/blob/master/yzm_0.0.1.tar.gz"
-  sha256 "0919b176c49abaecf5cfe5c2cd64a3f929ad5ef4abe2ace9211045293a8859b6"
-  license ""
 
   # depends_on "cmake" => :build
 
