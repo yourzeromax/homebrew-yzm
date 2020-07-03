@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+if test $# -ge 4
+then
+    echo "params error, only one or nothing."
+
+elif [ ${#@} -eq 1 ] && [ "${@#"--help"}" = "" ]
+then
+  printf -- '--------------------------------------\n';
+  printf -- '--help       获取帮助\n'
+  printf -- '[path]       按照地址执行adb install,默认为build下debug.apk\n'
+  printf -- '-rd [path]   强制执行降级adb install,默认为build下debug.apk\n'
+  printf -- '-m [name]    按照名字移动apk包到desktop中\n'
+  printf -- '-a           打印当前Activity的堆栈信息\n'
+  printf -- '-l [name]    按照name过滤打印日志\n'
+  printf -- '-p           输出所有的进程\n'
+  printf -- '-p [name]    按照name过滤进程\n'
+  printf -- '--size       获取当前设备的分辨率\n'
+  printf -- '--adb        杀死并重启adb\n'
+  printf -- '-m [name]    移动debug包至桌面\n'
+  printf -- '--------------------------------------\n';
+  exit 0;
+
+#logcat
+elif [ ${#@} -eq 1 ] && test "-l" = $1 
+then 
+    adb logcat 
+
+elif test $# -eq 2 && test "-l" = $1 
+then 
+    adb logcat | grep $2
+
+#activitys
+elif test $# -eq 1 && test "-a" = $1
+then
+    adb shell dumpsys activity activities | sed -En -e '/Running activities/,/Run #0/p'
+
+#proccess
+elif test $# -eq 1 && test "-p" = $1
+then
+    adb shell ps
+
+elif test $# -eq 2 && test "-p" = $1
+then
+    adb shell ps | grep $2
+
+#size
+elif test $# -eq 1 && test "--size" = $1
+then
+    adb shell wm size
+
+#adb restart
+elif test $# -eq 1 && test "--adb" = $1
+then
+    adb kill-server && adb start-server
+
+#install
+elif test $# -eq 2 && test "-rd" = $1
+then
+    adb install -r -d $2
+
+elif test $# -eq 1 && test "-rd" = $1
+then   
+    adb install -r -d $DEFAULT_APK_LOCATION
+
+#move apk to desktop
+elif test $# -eq 2 && test "-m" = $1
+then 
+    mv $DEFAULT_APK_LOCATION ~/Desktop/$2.apk
+
+else 
+    adb install -r $DEFAULT_APK_LOCATION
+fi
+
